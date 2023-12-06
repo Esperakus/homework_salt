@@ -10,5 +10,3 @@ terraform.tfstate.backup
 /ansible/hosts
 .DS_Store
 .vscode
-pics
-variables.tf
