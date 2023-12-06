@@ -1,0 +1,30 @@
+nginx0:
+  host: nginx0
+  user: almalinux
+  priv: /home/almalinux/.ssh/id_rsa
+  sudo: true
+
+nginx1:
+  host: nginx1
+  user: almalinux
+  priv: /home/almalinux/.ssh/id_rsa
+  sudo: true
+
+backend0:
+  host: backend0
+  user: almalinux
+  priv: /home/almalinux/.ssh/id_rsa
+  sudo: true
+
+backend1:
+  host: backend1
+  user: almalinux
+  priv: /home/almalinux/.ssh/id_rsa
+  sudo: true
+
+db:
+  host: db
+  user: almalinux
+  priv: /home/almalinux/.ssh/id_rsa
+  sudo: true
+

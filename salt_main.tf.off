@@ -1,0 +1,75 @@
+resource "yandex_compute_instance" "salt-main" {
+
+  name     = "salt-main"
+  hostname = "salt-main"
+
+  resources {
+    cores  = 2
+    memory = 2
+  }
+
+  scheduling_policy {
+    preemptible = true
+  }
+
+  boot_disk {
+    initialize_params {
+      image_id = var.image_id
+    }
+  }
+
+  network_interface {
+    subnet_id = yandex_vpc_subnet.subnet01.id
+    # nat       = true
+  }
+
+  metadata = {
+    ssh-keys = "almalinux:${tls_private_key.ssh.public_key_openssh}"
+  }
+
+  # connection {
+  #   type        = "ssh"
+  #   user        = "almalinux"
+  #   private_key = tls_private_key.ssh.private_key_pem
+  #   host        = self.network_interface.0.nat_ip_address
+  # }
+
+  # provisioner "remote-exec" {
+  #   inline = [
+  #     "echo 'host is up'",
+  #     "sudo dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm",
+  #     "sudo dnf install wget -y",
+  #     "sudo dnf update -y",
+  #     "sudo dnf install -y ansible",
+  #     "sudo rpm --import https://repo.saltproject.io/salt/py3/redhat/8/x86_64/SALT-PROJECT-GPG-PUBKEY-2023.pub",
+  #     "curl -fsSL https://repo.saltproject.io/salt/py3/redhat/8/x86_64/latest.repo | sudo tee /etc/yum.repos.d/salt.repo",
+  #     "sudo dnf expire-cache",
+  #     "sudo dnf -y install salt-master salt-ssh salt-syndic salt-cloud salt-api",
+  #     "sudo systemctl enable --now salt-master",
+
+  #   ]
+  # }
+
+  # provisioner "file" {
+  #   source      = "id_rsa"
+  #   destination = "/home/almalinux/.ssh/id_rsa"
+  # }
+
+  # provisioner "file" {
+  #   source      = "id_rsa.pub"
+  #   destination = "/home/almalinux/.ssh/id_rsa.pub"
+  # }
+
+  # provisioner "file" {
+  #   source      = "salt"
+  #   destination = "/tmp"
+  # }
+
+  # provisioner "remote-exec" {
+  #   inline = [
+  #     "chmod 600 /home/almalinux/.ssh/id_rsa",
+  #     "sudo cp -r /tmp/salt /srv"
+  #   ]
+  # }
+
+}

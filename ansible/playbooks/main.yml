@@ -1,0 +1,6 @@
+---
+
+- hosts: all
+  roles:
+    - { role: salt-minions, become: true }
+

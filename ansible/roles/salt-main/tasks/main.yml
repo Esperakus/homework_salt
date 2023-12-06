@@ -1,0 +1,79 @@
+---
+# tasks file for salt-main
+
+- name: import gpg
+  command: rpm --import https://repo.saltproject.io/salt/py3/redhat/8/x86_64/SALT-PROJECT-GPG-PUBKEY-2023.pub
+
+# - name: install salt repo
+#   command: curl -fsSL https://repo.saltproject.io/salt/py3/redhat/8/x86_64/latest.repo | tee /etc/yum.repos.d/salt.repo
+
+- name: salt repo
+  get_url:
+    url:  https://repo.saltproject.io/salt/py3/redhat/8/x86_64/latest.repo
+    dest:  /etc/yum.repos.d/salt.repo
+    
+- name: install salt packages
+  dnf:
+    name:
+      - salt-master
+      - salt-minion
+      - salt-ssh
+      - salt-syndic
+      - salt-cloud
+      - salt-api
+    update_cache: true
+
+- name: make salt dir
+  file:
+    name: /srv/salt/states
+    state: directory
+
+- name: copy states
+  copy:
+    src: files/states/
+    dest: /srv/salt/states/
+    directory_mode: true
+
+# - name: add conf
+#   lineinfile:
+#     path: /etc/salt/master
+#     regexp: '^#roster_file:'
+#     line: 'roster_file: /srv/salt/states/roster'
+
+- name: add master config
+  copy:
+    src: files/master.conf
+    dest: /etc/salt/master.d/master.conf
+
+- name: start salt master
+  systemd:
+    name: salt-master
+    daemon_reload: true
+    state: started
+    enabled: true
+
+# - name: accept minions' keys
+#   shell: /bin/salt-key -Ay
+
+- name: copy key script
+  copy:
+    src: files/salt_key.sh
+    dest: /tmp/salt_key.sh
+    mode: 775
+    owner: root
+    group: root
+
+
+- name: copy apply script
+  copy:
+    src: files/state_apply.sh
+    dest: /tmp/state_apply.sh
+    mode: 775
+    owner: root
+    group: root
+
+- name: salt-key add
+  shell: /tmp/salt_key.sh
+
+- name: start salt provision
+  shell: /tmp/state_apply.sh
